@@ -3,40 +3,28 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - master
+      - main  # Déclenche le déploiement à chaque fois qu'il y a un push sur la branche main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v1
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Deploy to VPS
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
+          # Naviguer vers votre dossier de projet sur le VPS
+          cd /home/my_sites
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: true
-          tags: yourdockerhubusername/my-html-app:latest
+          # Mettre à jour le code source
+          git pull origin main
 
-      - name: SSH to VPS and Deploy
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd ~/my-html-app
-            docker pull yourdockerhubusername/my-html-app:latest
-            docker stop my-html-container || true
-            docker rm my-html-container || true
-            docker run -d -p 80:80 --name my-html-container yourdockerhubusername/my-html-app:latest
+        EOF
