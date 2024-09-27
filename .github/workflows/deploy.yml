@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main  # Déclenche le déploiement à chaque fois qu'il y a un push sur la branche main
+      - main  # Trigger the deployment on a push to the main branch
 
 jobs:
   deploy:
@@ -16,18 +16,18 @@ jobs:
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Make sure SSH_PRIVATE_KEY is set in Secrets
 
     - name: Deploy to VPS
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << 'EOF'
-          # Naviguer vers votre dossier de projet sur le VPS
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} << EOF
+          # Navigate to your project directory on the VPS
           cd /home/my_sites
 
-          # Mettre à jour le code source
+          # Update the source code
           git pull origin main
 
-          # Rebuild and restart your services (e.g., Docker)
+          # Optionally, rebuild and restart your Docker containers (uncomment if necessary)
           #docker-compose down
           #docker-compose up -d --build
         EOF
