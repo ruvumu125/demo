@@ -27,4 +27,7 @@ jobs:
           # Mettre à jour le code source
           git pull origin main
 
+          # Rebuild and restart your services (e.g., Docker)
+          #docker-compose down
+          #docker-compose up -d --build
         EOF
