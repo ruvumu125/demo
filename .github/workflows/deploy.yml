@@ -20,4 +20,4 @@ jobs:
         username: root
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "."  # Répertoire source sur GitHub
-        target: "/var/www/my-apps"  # Chemin de destination sur le VPS
+        target: "/var/www"  # Chemin de destination sur le VPS
