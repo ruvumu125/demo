@@ -22,6 +22,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no deployer@${{ secrets.VPS_HOST }} << 'EOF'
             cd /var/www/my-apps
-            git pull origin main  # Adjust branch name if needed
+            git pull origin master  # Adjust branch name if needed
             # Add commands to restart your application here
           EOF
